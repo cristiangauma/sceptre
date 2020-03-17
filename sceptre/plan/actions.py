@@ -154,7 +154,7 @@ class StackActions(object):
 
     def diff(self):
         """
-        Creates a diff between local template and CloudFormation template. Then shows that diff using your
+        Creates a diff between local and CloudFormation templates. Then shows that diff using your
         default web browser.
         """
         import difflib

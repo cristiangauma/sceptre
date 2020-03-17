@@ -6,7 +6,7 @@ from sceptre.plan.plan import SceptrePlan
 from sceptre.cli.helpers import stack_status_exit_code
 
 
-@click.command(name="diff", short_help="Creates a diff between local template and CloudFormation template.")
+@click.command(name="diff", short_help="Creates a diff between local and CloudFormation templates.")
 @click.argument("path")
 @click.pass_context
 @catch_exceptions
