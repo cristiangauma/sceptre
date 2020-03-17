@@ -106,7 +106,8 @@ class SceptrePlan(object):
 
     def diff(self, *args):
         """
-        Creates a diff between local template and cloudformation template
+        Creates a diff between local template and CloudFormation template. Then shows that diff using your
+        default web browser.
         """
         self.resolve(command=self.diff.__name__)
         return self._execute(*args)
