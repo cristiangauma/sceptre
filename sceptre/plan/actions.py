@@ -152,6 +152,35 @@ class StackActions(object):
             else:
                 raise
 
+    def diff(self):
+        """
+        Creates a diff between local template and cloudformation template and use your default browser
+        to show you the diff.
+        """
+        import difflib
+        import webbrowser
+
+        temp_file = '/tmp/sceptre_diff.html'
+        self.logger.info(f"Creating diff of {self.stack.external_name}")
+
+        response = self.connection_manager.call(
+            service="cloudformation",
+            command="get_template",
+            kwargs={"StackName": self.stack.external_name}
+        )
+
+        json_a = json.dumps(json.loads(self.stack.template.body), sort_keys=True, indent=4, separators=(',', ': ')).strip().splitlines()
+        json_b = json.dumps(response['TemplateBody'], sort_keys=True, indent=4, separators=(',', ': ')).strip().splitlines()
+
+        diff = difflib.HtmlDiff(wrapcolumn=80).make_file(json_a, json_b, 'LOCAL', 'CLOUDFORMATION')
+        try:
+            with open(temp_file, 'w') as f:
+                f.write(diff)
+        except Exception as e:
+            self.logger.error(e, exc_info=1)
+
+        webbrowser.open('file://' + temp_file)
+
     def cancel_stack_update(self):
         """
         Cancels a Stack update.

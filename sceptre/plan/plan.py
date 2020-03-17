@@ -104,6 +104,13 @@ class SceptrePlan(object):
         self.resolve(command=self.update.__name__)
         return self._execute(*args)
 
+    def diff(self, *args):
+        """
+        Creates a diff between local template and cloudformation template
+        """
+        self.resolve(command=self.diff.__name__)
+        return self._execute(*args)
+
     def cancel_stack_update(self, *args):
         """
         Cancels a Stack update.
