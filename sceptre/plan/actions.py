@@ -12,6 +12,7 @@ import time
 
 from os import path
 from datetime import datetime, timedelta
+from collections import OrderedDict
 
 import botocore
 import json
@@ -161,6 +162,7 @@ class StackActions(object):
         import webbrowser
         from cfn_flip import to_json
 
+
         temp_file = '/tmp/sceptre_diff.html'
         self.logger.info(f"Creating diff of {self.stack.external_name}")
 
@@ -171,17 +173,17 @@ class StackActions(object):
         )
 
         try:
-            local_dict = json.loads(self.stack.template.body)
+            local_dict = json.loads(self.stack.template.body, object_pairs_hook=OrderedDict)
         except ValueError:
-            local_dict = json.loads(to_json(self.stack.template.body))
+            local_dict = json.loads(to_json(self.stack.template.body), object_pairs_hook=OrderedDict)
 
         if isinstance(response['TemplateBody'], str):
-            cf_dict = json.loads(to_json(response['TemplateBody']))
+            cf_dict = json.loads(to_json(response['TemplateBody']), object_pairs_hook=OrderedDict)
         else:
             cf_dict = response['TemplateBody']
 
-        local = json.dumps(local_dict, sort_keys=True, indent=4, separators=(',', ': ')).strip().splitlines()
-        cloudformation = json.dumps(cf_dict, sort_keys=True, indent=4, separators=(',', ': ')).strip().splitlines()
+        local = json.dumps(local_dict, indent=4, separators=(',', ': ')).strip().splitlines()
+        cloudformation = json.dumps(cf_dict, indent=4, separators=(',', ': ')).strip().splitlines()
 
         diff = difflib.HtmlDiff(wrapcolumn=80).make_file(local, cloudformation, 'LOCAL', 'CLOUDFORMATION')
         try:
