@@ -159,6 +159,7 @@ class StackActions(object):
         """
         import difflib
         import webbrowser
+        from cfn_flip import to_json
 
         temp_file = '/tmp/sceptre_diff.html'
         self.logger.info(f"Creating diff of {self.stack.external_name}")
@@ -169,10 +170,20 @@ class StackActions(object):
             kwargs={"StackName": self.stack.external_name}
         )
 
-        json_a = json.dumps(json.loads(self.stack.template.body), sort_keys=True, indent=4, separators=(',', ': ')).strip().splitlines()
-        json_b = json.dumps(response['TemplateBody'], sort_keys=True, indent=4, separators=(',', ': ')).strip().splitlines()
+        try:
+            local_dict = json.loads(self.stack.template.body)
+        except ValueError:
+            local_dict = json.loads(to_json(self.stack.template.body))
 
-        diff = difflib.HtmlDiff(wrapcolumn=80).make_file(json_a, json_b, 'LOCAL', 'CLOUDFORMATION')
+        if isinstance(response['TemplateBody'], str):
+            cf_dict = json.loads(to_json(response['TemplateBody']))
+        else:
+            cf_dict = response['TemplateBody']
+
+        local = json.dumps(local_dict, sort_keys=True, indent=4, separators=(',', ': ')).strip().splitlines()
+        cloudformation = json.dumps(cf_dict, sort_keys=True, indent=4, separators=(',', ': ')).strip().splitlines()
+
+        diff = difflib.HtmlDiff(wrapcolumn=80).make_file(local, cloudformation, 'LOCAL', 'CLOUDFORMATION')
         try:
             with open(temp_file, 'w') as f:
                 f.write(diff)
