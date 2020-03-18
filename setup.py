@@ -20,7 +20,8 @@ install_requirements = [
     "packaging>=16.8,<17.0",
     "six>=1.11.0,<2.0.0",
     "networkx==2.1",
-    "typing>=3.7.0,<3.8.0"
+    "typing>=3.7.0,<3.8.0",
+    "cfn-flip==1.2.2",
 ]
 
 test_requirements = [
@@ -29,7 +30,7 @@ test_requirements = [
     "moto>=1.3.8,<2.0",
     "mock>=2.0.0,<3.0.0",
     "behave>=1.2.5,<2.0.0",
-    "freezegun==0.3.12"
+    "freezegun==0.3.12",
 ]
 
 setup_requirements = [
